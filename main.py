@@ -2,7 +2,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 import scipy.stats as st
-import numpy
+import numpy as np
+import seaborn as sns
 os.getcwd()
 os.listdir()
 os.chdir('/Users/Robert/Desktop/Studia/III SEMESTR/Analiza i wizualizacja danych')
@@ -87,12 +88,12 @@ class Stats:
                     self.listav2.append('suma')
 
                 elif j == 8:
-                    self.odmienne_kategorie = round(data[self.name].unique(), 4)
+                    self.odmienne_kategorie = data[self.name].unique()
                     self.lista.append(self.odmienne_kategorie)
                     self.listav2.append('odmienne_kategorie')
 
                 elif j == 9:
-                    self.ilosc_wartosci = round(data[self.name].count(), 4)
+                    self.ilosc_wartosci = data[self.name].count()
                     self.lista.append(self.ilosc_wartosci)
                     self.listav2.append('ilosc_wartosci')
 
@@ -102,7 +103,7 @@ class Stats:
 
 #dlugosc_na_portalu
 dlugosc_na_portalu = Stats('duration_listed')
-dlugosc_na_portalu.liczenie([0,1,2,3,4,5,6])
+dlugosc_na_portalu.liczenie([0,1,2,3,4,5,6,9,8])
 
 #cena w dolcach
 cena = Stats('price_usd')
@@ -131,15 +132,58 @@ podbicia.liczenie([0,1,2,3,4,5,6])
 
 
 
+def pearson(name1, name2):
+    war1 = data[name1]
+    war2 = data[name2]
+    war1 = war1.fillna(0)
+    war2 = war2.fillna(0)
+    p = st.pearsonr(war1, war2)
+    rpearson = round(p[0], 5)
+    ppearson = round(p[1], 5)
+    print("Korelacja r Pearsona dla", name1, "i", name2, "wynosi:", rpearson, "a poziom istotności wynosi:", format(ppearson, '.3f'))
+    return rpearson, ppearson
+
+
+def wykres(name1, name2):
+    war1 = data[name1]
+    war2 = data[name2]
+    war1 = war1.fillna(0)
+    war2 = war2.fillna(0)
+    plt.figure(figsize=(20,5))
+    sns.barplot(x = war1, y = war2, linewidth=2.5, facecolor=(1, 1, 1, 0), errcolor=".2", edgecolor=".2")
+    plt.show()
+
+
 
 #Korelacja Pearsona dla ilości zdjęć i ilości dni na poltaru:
 
-data['duration_listed'] = data['duration_listed'].astype(int)
+"""data['duration_listed'] = data['duration_listed'].astype(int)
 data['number_of_photos'] = data['number_of_photos'].astype(int)
 a = st.pearsonr(data["number_of_photos"], data["duration_listed"])
 pearson_nop_dl = round(a[0],5)
 pearson_nop_dl_rzet = round(a[1],10)
 print("Korelacja Pearsona dla ilości zdjęć i ilości dni na poltaru aukcyjnym wynosi", pearson_nop_dl, ", a rzetelność wynosi", pearson_nop_dl_rzet )
+"""
+#Korelacja Pearsona dla pojemności silnika i cena:
+rpearson_ec_usd, ppearson_ec_usd  = pearson('engine_capacity', 'duration_listed')
+#done
+
+#Korelacja Pearsona dla ilości zdjęć i ilości dni na poltaru:
+rpearson_nop_dl, ppearson_nop_dl = pearson('number_of_photos', 'duration_listed')
+#tabela
+data1 = data['manufacturer_name'].fillna('none')
+data2 = data['color'].fillna('none')
+
+audi=data[data['manufacturer_name']=='Audi']
+print(audi[['price_usd','engine_capacity','year_produced','odometer_value']])
+pv2 = pd.pivot_table(audi, values='engine_capacity', index=['year_produced', 'odometer_value'], columns=['year_produced'])
+plt.show()
+
+
+
+
+
+
 
 
 
@@ -150,8 +194,8 @@ print("Korelacja Pearsona dla ilości zdjęć i ilości dni na poltaru aukcyjnym
 #print(kupa)
 
 #nie wiem jak ugryść tak dużą ilość danych na tabeli
-"""
-plt.bar(data["number_of_photos"], data["duration_listed"])
-plt.ylabel('Ilość dni na poltaru aukcyjnym')
-plt.xlabel('Ilość zdjęć')
+
+"""plt.bar(data["duration_listed"], dlugosc_na_portalu.ilosc_wartosci )
+plt.xlabel('Ilość dni')
+plt.xlabel(dlugosc_na_portalu.ilosc_wartosci)
 plt.show()"""
