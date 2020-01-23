@@ -155,28 +155,39 @@ def wykres(name1, name2):
 
 
 
-#Korelacja Pearsona dla ilości zdjęć i ilości dni na poltaru:
 
-"""data['duration_listed'] = data['duration_listed'].astype(int)
-data['number_of_photos'] = data['number_of_photos'].astype(int)
-a = st.pearsonr(data["number_of_photos"], data["duration_listed"])
-pearson_nop_dl = round(a[0],5)
-pearson_nop_dl_rzet = round(a[1],10)
-print("Korelacja Pearsona dla ilości zdjęć i ilości dni na poltaru aukcyjnym wynosi", pearson_nop_dl, ", a rzetelność wynosi", pearson_nop_dl_rzet )
-"""
 #Korelacja Pearsona dla pojemności silnika i cena:
 rpearson_ec_usd, ppearson_ec_usd  = pearson('engine_capacity', 'duration_listed')
-#done
+"""wykres('engine_capacity', 'duration_listed')"""
 
 #Korelacja Pearsona dla ilości zdjęć i ilości dni na poltaru:
 rpearson_nop_dl, ppearson_nop_dl = pearson('number_of_photos', 'duration_listed')
-#tabela
-data1 = data['manufacturer_name'].fillna('none')
-data2 = data['color'].fillna('none')
+"""wykres('numbers_of_photos', 'duration_listed')"""
 
-audi=data[data['manufacturer_name']=='Audi']
-print(audi[['price_usd','engine_capacity','year_produced','odometer_value']])
-pv2 = pd.pivot_table(audi, values='engine_capacity', index=['year_produced', 'odometer_value'], columns=['year_produced'])
+#korelacja miedzy przebiegiem a liczba podbic
+rpearson_ov_up, ppearson_ov_up = pearson('engine_capacity', "up_counter")
+
+
+#wykres dla kolorów
+"""
+kolory = data["color"].value_counts()
+colory = ['black', 'silver', 'blue', 'white', 'grey', 'red', 'green', 'other', 'brown',
+ 'violet', 'yellow', 'orange']
+plt.figure(1 , figsize=(9 ,8))
+plt.pie(kolory, labels = colory)
+plt.show()
+"""
+
+#zmieniałem tylko i włącznie nazwe manufacturer name, zeby nie powtarzac kodu
+"""audi=data[(data['manufacturer_name']=='BMW') ]
+print(round(audi[['manufacturer_name','price_usd','engine_capacity','odometer_value', "year_produced"]].mean(),2))"""
+
+#wykres dla skrzyn manualnych
+k = data['transmission'].value_counts()
+print(k)
+plt.figure(1 , figsize=(9 ,8))
+plt.pie(k, labels = ['Manualna, 25633 sztuk', 'Automatyczna, 12898 sztuk'])
+plt.title('Skrzynie biegów')
 plt.show()
 
 
